@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "widget_micro"
+version = "0.1.0"
+description = "mircoservice for deleting widgets"
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+SQLAlchemy = "1.4.29"
+fastapi = "^0.78.0"
+uvicorn = "^0.18.2"
+python-dotenv = "^0.20.0"
+psycopg2-binary = "^2.9.3"
+alembic = "^1.8.0"
+argparse = "^1.4.0"
+selenium = "^4.4.3"
+beautifulsoup4 = "^4.11.1"
+webdriver-manager = "^3.8.3"
+python-dateutil = "^2.8.2"
+lxml = "^4.9.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

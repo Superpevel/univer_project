@@ -1,0 +1,8 @@
+logs/*.log
+__pycache__/
+.env
+*.pyc
+*.pyo
+.DS_STORE
+alembic.ini
+.python-version
