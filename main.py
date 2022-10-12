@@ -47,4 +47,4 @@ def get_items_by_id(request: PingRequest, db:Session=Depends(get_db)):
     return True
 
 if __name__ == "__main__":
-    uvicorn.run('main:app', host="0.0.0.0", port=8001, reload=True, debug=True)
+    uvicorn.run('main:app', host="0.0.0.0", port=8007, reload=True, debug=True)
