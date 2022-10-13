@@ -5,3 +5,4 @@ __pycache__/
 *.pyo
 .DS_STORE
 .python-version
+alembic.ini
