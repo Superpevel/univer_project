@@ -15,6 +15,8 @@ from models.ping import Ping
 from sqlalchemy.orm import Session
 from schemas.request_schemas.card_request import CardDelete, CardRequest,UserRegister,UserLogin
 from models.user import User
+import jwt
+
 load_dotenv()
 
 logging.config.dictConfig(LOGGING_CONFIG)
@@ -63,7 +65,9 @@ def register(request: UserRegister, db: Session=Depends(get_db)):
     user = db.query(User).filter(User.login==request.login).first()
     if user:
         return {'error': 'user is already registred'}
-    user = User(login=request.login, email=request.email, password=request.password)
+    encoded_jwt = jwt.encode({"login": request.login, 'password': request.password}, "secret", algorithm="HS256")
+    user = User(login=request.login, email=request.email, password=request.password, token=encoded_jwt)
+    
     db.add(user)
     db.commit()
     db.refresh(user)
