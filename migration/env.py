@@ -9,8 +9,7 @@ from db.db_conf import *
 from alembic import context
 
 # model init
-from models.user import User
-from models.ping import Ping
+from models import *
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

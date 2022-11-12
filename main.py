@@ -9,9 +9,11 @@ import logging
 from db.db_conf import get_db
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from models.card import Card
 from schemas.request_schemas.ping_schema import PingRequest
 from models.ping import Ping
 from sqlalchemy.orm import Session
+from schemas.request_schemas.card_request import CardDelete, CardRequest
 
 load_dotenv()
 
@@ -36,15 +38,34 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
     
 @app.post('/ping')
-def get_items_by_id(request: PingRequest, db:Session=Depends(get_db)):
+def ping(request: PingRequest, db:Session=Depends(get_db)):
     logger.info(f"ping {request.text}")
     ping = Ping(text=request.text)
     db.add(ping)
     db.commit()
     return True
 
+
+@app.post('/new_card')
+def new_card(request: CardRequest, db:Session=Depends(get_db)):
+
+    request = dict(request)
+    card = Card(**request)
+    db.add(card)
+    db.commit()
+    db.refresh(card)
+    return card
+
+@app.post('/delete_card')
+def delete_card(request: CardDelete, db:Session=Depends(get_db)):
+    card: Card = db.query(Card).filter(Card.id==request.id).first()
+    if card:
+        db.delete()
+        db.commit()
+        return {'message': f'кароточка {card.title} удалена'}
+    else:
+        return {'message': 'такой карточке нету'}
 if __name__ == "__main__":
     uvicorn.run('main:app', host="0.0.0.0", port=8007, reload=True, debug=True)

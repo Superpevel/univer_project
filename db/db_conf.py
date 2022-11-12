@@ -2,7 +2,6 @@ import os
 import asyncio
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine, Column, Integer, String, Text, ForeignKey, BigInteger, Boolean, TIMESTAMP
@@ -15,7 +14,7 @@ SQLALCHEMY_DATABASE_URL = (f"postgresql://{os.environ.get('DB_USER')}"
                 f"/{os.environ.get('DB_NAME')}")
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={}, future=True
+    SQLALCHEMY_DATABASE_URL, connect_args={}
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, future=True)
 
