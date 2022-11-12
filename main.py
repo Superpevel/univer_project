@@ -13,8 +13,8 @@ from models.card import Card
 from schemas.request_schemas.ping_schema import PingRequest
 from models.ping import Ping
 from sqlalchemy.orm import Session
-from schemas.request_schemas.card_request import CardDelete, CardRequest
-
+from schemas.request_schemas.card_request import CardDelete, CardRequest,UserRegister,UserLogin
+from models.user import User
 load_dotenv()
 
 logging.config.dictConfig(LOGGING_CONFIG)
@@ -57,6 +57,25 @@ def new_card(request: CardRequest, db:Session=Depends(get_db)):
     db.commit()
     db.refresh(card)
     return card
+
+@app.post('/register')
+def register(request: UserRegister, db: Session=Depends(get_db)):
+    user = db.query(User).filter(User.login==request.login).first()
+    if user:
+        return {'error': 'user is already registred'}
+    user = User(login=request.login, email=request.email, password=request.password)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
+@app.post('/login')
+def login(request: UserLogin, db: Session=Depends(get_db)):
+    user = db.query(User).filter(User.login==request.login,).first()
+    if not user:
+        return {'error': 'No such user'}
+    else:
+        return user
 
 @app.post('/delete_card')
 def delete_card(request: CardDelete, db:Session=Depends(get_db)):
