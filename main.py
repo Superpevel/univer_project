@@ -2,7 +2,7 @@ import logging.config
 from typing import List
 import uvicorn
 from dotenv import load_dotenv
-from fastapi import FastAPI, Query, Request, Response, Depends
+from fastapi import FastAPI, Query, Request, Response, Depends, Header
 from fastapi.responses import JSONResponse
 from logs.logs_config import LOGGING_CONFIG
 import logging
@@ -40,7 +40,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-    
+
+def secure(token):
+    print(token)
+    decoded_token = jwt.decode(token, 'secret', algorithms='HS256', verify=False)
+    # this is often used on the client side to encode the user's email address or other properties
+    return decoded_token
+
 @app.post('/ping')
 def ping(request: PingRequest, db:Session=Depends(get_db)):
     logger.info(f"ping {request.text}")
@@ -51,10 +57,14 @@ def ping(request: PingRequest, db:Session=Depends(get_db)):
 
 
 @app.post('/new_card')
-def new_card(request: CardRequest, db:Session=Depends(get_db)):
+def new_card(request: CardRequest, db:Session=Depends(get_db), authorization: str = Header(None)):
+    try: 
+        user_data = secure(authorization)
+    except Exception as e:
+        return 'Not valid token'
 
     request = dict(request)
-    card = Card(**request)
+    card = Card(**request, user_id=user_data['user_id'])
     db.add(card)
     db.commit()
     db.refresh(card)
