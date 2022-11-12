@@ -94,10 +94,15 @@ def login(request: UserLogin, db: Session=Depends(get_db)):
         return user
 
 @app.post('/delete_card')
-def delete_card(request: CardDelete, db:Session=Depends(get_db)):
-    card: Card = db.query(Card).filter(Card.id==request.id).first()
+def delete_card(request: CardDelete, db:Session=Depends(get_db), authorization: str = Header(None)):
+    try: 
+        user_data = secure(authorization)
+    except Exception as e:
+        return 'Not valid token'
+
+    card: Card = db.query(Card).filter(Card.id==request.id,Card.user_id==user_data['user_id']).first()
     if card:
-        db.delete()
+        db.delete(card)
         db.commit()
         return {'message': f'кароточка {card.title} удалена'}
     else:
