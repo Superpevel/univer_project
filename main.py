@@ -65,7 +65,9 @@ def register(request: UserRegister, db: Session=Depends(get_db)):
     user = db.query(User).filter(User.login==request.login).first()
     if user:
         return {'error': 'user is already registred'}
-    encoded_jwt = jwt.encode({"login": request.login, 'password': request.password}, "secret", algorithm="HS256")
+    obj: User = db.query(User).order_by(User.id.desc()).first()
+    id = obj.id + 1
+    encoded_jwt = jwt.encode({"login": request.login, 'password': request.password, 'user_id': id}, "secret", algorithm="HS256")
     user = User(login=request.login, email=request.email, password=request.password, token=encoded_jwt)
     
     db.add(user)
