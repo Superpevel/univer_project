@@ -7,6 +7,7 @@ class CardRequest(BaseModel):
     comment: str
     main_photo: str
     price: int
+    amount: int
 
 class CardDelete(BaseModel):
     id: int
@@ -20,3 +21,8 @@ class UserRegister(BaseModel):
 class UserLogin(BaseModel):
     login: str
     password: str
+
+
+class InvoiceRequest(BaseModel):
+    card_id: int
+    amount: int

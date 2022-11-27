@@ -13,8 +13,9 @@ from models.card import Card
 from schemas.request_schemas.ping_schema import PingRequest
 from models.ping import Ping
 from sqlalchemy.orm import Session
-from schemas.request_schemas.card_request import CardDelete, CardRequest,UserRegister,UserLogin
+from schemas.request_schemas.card_request import CardDelete, CardRequest, UserRegister, UserLogin, InvoiceRequest
 from models.user import User
+from models.invoice import Invoice
 import jwt
 
 load_dotenv()
@@ -65,11 +66,35 @@ def new_card(request: CardRequest, db:Session=Depends(get_db), authorization: st
         return 'Not valid token'
 
     request = dict(request)
+    request['current_amount'] = request['amount']
     card = Card(**request, user_id=user_data['user_id'])
     db.add(card)
     db.commit()
     db.refresh(card)
     return card
+
+@app.post('/new_invoice')
+def new_card(request: InvoiceRequest, db:Session=Depends(get_db), authorization: str = Header(None)):
+    try: 
+        user_data = secure(authorization)
+    except Exception as e:
+        return 'Not valid token'
+
+    card: Card = db.query(Card).filter(Card.id==request.card_id).first()
+    if not card:
+        return 'no such card'
+    if (card.current_amount - request.amount) < 0:
+        return 'amount is below 0'
+
+    price = card.price*request.amount
+    invoice = Invoice(amount=request.amount, card_id=request.card_id,price=price, user_id=user_data['user_id'])
+    db.add(invoice)
+    db.commit()
+    card.current_amount = card.current_amount - request.amount
+    db.add(card)
+    db.commit()
+    db.refresh(invoice)
+    return invoice
 
 @app.get('/get_cards')
 def get_cards(db:Session=Depends(get_db)):
