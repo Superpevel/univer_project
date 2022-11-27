@@ -15,6 +15,8 @@ class Card(Base):
     title = Column(String(800), nullable=False)
     comment = Column(String(), nullable=True)
     price = Column(Float, nullable=False)
+    amount = Column(Float, nullable=True)
+    current_amount = Column(Float, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"))
 
     def __repr__(self):
