@@ -44,6 +44,7 @@ app.add_middleware(
 def secure(token):
     print(token)
     decoded_token = jwt.decode(token, 'secret', algorithms='HS256', verify=False)
+    print(decoded_token)
     # this is often used on the client side to encode the user's email address or other properties
     return decoded_token
 
@@ -72,6 +73,16 @@ def new_card(request: CardRequest, db:Session=Depends(get_db), authorization: st
 
 @app.get('/get_cards')
 def get_cards(db:Session=Depends(get_db)):
+    cards = db.query(Card).all()
+    return cards
+
+@app.get('/get_cards_user')
+def get_cards(db:Session=Depends(get_db), authorization: str = Header(None)):
+    try: 
+        user_data = secure(authorization)
+    except Exception as e:
+        return 'Not valid token'
+
     cards = db.query(Card).all()
     return cards
 
