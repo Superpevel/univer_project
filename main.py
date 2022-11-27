@@ -70,6 +70,11 @@ def new_card(request: CardRequest, db:Session=Depends(get_db), authorization: st
     db.refresh(card)
     return card
 
+@app.get('/get_cards')
+def get_cards(db:Session=Depends(get_db)):
+    cards = db.query(Card).all()
+    return cards
+
 @app.post('/register')
 def register(request: UserRegister, db: Session=Depends(get_db)):
     user = db.query(User).filter(User.login==request.login).first()
