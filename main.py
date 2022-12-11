@@ -111,7 +111,7 @@ def get_cards(db:Session=Depends(get_db), authorization: str = Header(None)):
     cards = db.query(Card).all()
     return cards
 
-@app.get('/get_invoice_user')
+@app.post('/get_invoice_user')
 def get_cards(db:Session=Depends(get_db), authorization: str = Header(None)):
     try: 
         user_data = secure(authorization)
