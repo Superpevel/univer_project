@@ -112,8 +112,13 @@ def get_cards(db:Session=Depends(get_db), authorization: str = Header(None)):
     return cards
 
 @app.get('/get_invoice_user')
-def get_cards( card_id: int, db:Session=Depends(get_db)):
-    invoice = db.query(Invoice).filter(Invoice.card_id==card_id).all()
+def get_cards(db:Session=Depends(get_db), authorization: str = Header(None)):
+    try: 
+        user_data = secure(authorization)
+    except Exception as e:
+        return 'Not valid token'
+
+    invoice = db.query(Invoice).filter(Invoice.user_id==user_data['user_id']).all()
     return invoice
 
 @app.post('/register')
