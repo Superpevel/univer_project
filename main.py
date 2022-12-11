@@ -111,6 +111,11 @@ def get_cards(db:Session=Depends(get_db), authorization: str = Header(None)):
     cards = db.query(Card).all()
     return cards
 
+@app.get('/get_invoice_user')
+def get_cards( card_id: int, db:Session=Depends(get_db)):
+    invoice = db.query(Invoice).filter(Invoice.card_id==card_id).all()
+    return invoice
+
 @app.post('/register')
 def register(request: UserRegister, db: Session=Depends(get_db)):
     user = db.query(User).filter(User.login==request.login).first()
