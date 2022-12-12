@@ -98,7 +98,7 @@ def new_card(request: InvoiceRequest, db:Session=Depends(get_db), authorization:
 
 @app.get('/get_cards')
 def get_cards(db:Session=Depends(get_db)):
-    cards = db.query(Card).all()
+    cards = db.query(Card.id,Card.amount,Card.title, Card.current_amount, Card.main_photo, Card.price,Card.comment, Card.user_id, User.login, User.email).join(User).all()
     return cards
 
 @app.get('/get_cards_user')
@@ -128,7 +128,7 @@ def get_info_user(authorization: str = Header(None)):
     except Exception as e:
         return 'Not valid token'
 
-    return user_data['user_id']
+    return {'user_id': user_data['user_id'], 'login': user_data['login']}
 
 @app.post('/register')
 def register(request: UserRegister, db: Session=Depends(get_db)):
