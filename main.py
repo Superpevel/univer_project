@@ -118,7 +118,7 @@ def get_cards(db:Session=Depends(get_db), authorization: str = Header(None)):
     except Exception as e:
         return 'Not valid token'
 
-    invoice = db.query(Invoice, Card).filter(Invoice.user_id==user_data['user_id']).all()
+    invoice = db.query(Invoice.id, Invoice.card_id, Invoice.price, Invoice.amount,Invoice.user_id, Card.title).filter(Invoice.user_id==user_data['user_id']).join(Card).all()
     return invoice
 
 @app.post('/get_info_user')
