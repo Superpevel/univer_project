@@ -16,6 +16,8 @@ from sqlalchemy.orm import Session
 from schemas.request_schemas.card_request import CardDelete, CardRequest, UserRegister, UserLogin, InvoiceRequest
 from models.user import User
 from models.invoice import Invoice
+from fastapi.openapi.docs import get_swagger_ui_html
+import os
 import jwt
 
 load_dotenv()
@@ -23,7 +25,9 @@ load_dotenv()
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+app = FastAPI(
+    root_path = os.environ.get('ROOT_PATH'),
+)
 origins = ["*"]
 
 @app.middleware('http')
@@ -167,5 +171,17 @@ def delete_card(request: CardDelete, db:Session=Depends(get_db), authorization: 
         return {'message': f'кароточка {card.title} удалена'}
     else:
         return {'message': 'такой карточке нету'}
+
+# @app.get("/docs", include_in_schema=False)
+# async def custom_swagger_ui_html(req: Request):
+#     root_path = req.scope.get("root_path", "").rstrip("/")
+#     openapi_url = root_path + app.openapi_url
+#     print("HELLO")
+#     print("TELL MY WHY")
+#     return get_swagger_ui_html(
+#         openapi_url=openapi_url,
+#         title="API",
+#     )
+
 if __name__ == "__main__":
     uvicorn.run('main:app', host="0.0.0.0", port=8007, reload=True, debug=True)
